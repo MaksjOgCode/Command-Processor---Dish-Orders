@@ -3,7 +3,9 @@
 
 
 
-//
+#include "../hpp/command_manager.hpp"
+#include "../hpp/menu_manager.hpp"
+#include "../hpp/cpmenu_format.hpp"
 
 
 

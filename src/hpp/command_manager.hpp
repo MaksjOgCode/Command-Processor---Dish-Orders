@@ -5,6 +5,8 @@
 
 #include <string>
 #include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 
 
@@ -33,6 +35,17 @@ namespace COMMANDMANAGER
 	{
 	public:
 		void execute() override;
+	};
+
+	class Command_Processor
+	{
+	private:
+		/* std::string = The main token |  std::unordered_set <std::string> = Additional parameters */
+		const std::unordered_map <std::string, std::unordered_set <std::string> > command_table
+		{
+			{ "menu",  {"show"} },
+			{ "order", {"new", "add", "show"} }
+		};
 	};
 };
 namespace CMG = COMMANDMANAGER;
