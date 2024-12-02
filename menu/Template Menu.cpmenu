@@ -1,0 +1,34 @@
+// This section of the comment is generated automatically: To use this format, read the rules for formatting the ".cpmenu" file format
+// My github: https://github.com/MaksjOgCode
+
+new object {
+    category = "Appetizers"
+    dish = "Bruschetta"
+    description = "Tomato and basil bruschetta"
+    price = *120*
+    id = *1*
+}
+
+new object {
+    category = "Appetizers"
+    dish = "Garlic Bread"
+    description = "Garlic bread with cheese"
+    price = *90*
+    id = *2*
+}
+
+new object {
+    category = "Main Courses"
+    dish = "Pasta Carbonara"
+    description = "Pasta with bacon and cream sauce"
+    price = *250*
+    id = *3*
+}
+
+new object {
+    category = "Main Courses"
+    dish = "Steak"
+    description = "Grilled steak with vegetables"
+    price = *340*
+    id = *4*
+}

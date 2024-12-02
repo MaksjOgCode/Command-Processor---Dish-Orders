@@ -7,16 +7,18 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include <iostream>
 
 
 
 namespace MENUMANAGER
 {
+	/*------------------------------------------------------------------------------------------------------------------------*/
 	/* To work with dishes from the menu: */
 	class MenuItem
 	{
 	public:
-		MenuItem (std::string _name, std::string _description, uint16_t _price, uint16_t _id)
+		MenuItem (const std::string &_name, const std::string &_description, const uint16_t &_price, uint16_t _id)
 			: item {_name, _description, _price, _id}
 		{
 		}
@@ -51,18 +53,19 @@ namespace MENUMANAGER
 
 		Item item {};
 	};
+	/*------------------------------------------------------------------------------------------------------------------------*/
 
+	/*------------------------------------------------------------------------------------------------------------------------*/
 	/* A class for menu management: */
 	class Menu
 	{
 	public:
 		Menu(std::string _name_menu) : name_menu(_name_menu) { }
 
-		void insertItem(const std::string &category, const MenuItem &item) noexcept
-		{
-			menu_map[category].insert(item);
-		}
 
+		void insertItem(const std::string& category, const MenuItem& item) noexcept;
+
+		void displayMenu() const noexcept;
 	private:
 		/* The dishes should be sorted by category - where the ID goes in ascending order: */
 		struct MenuItemComparator
@@ -77,6 +80,7 @@ namespace MENUMANAGER
 		/* Current menu name: */
 		std::string name_menu {};
 	};
+	/*------------------------------------------------------------------------------------------------------------------------*/
 };
 namespace MMNG = MENUMANAGER;
 
