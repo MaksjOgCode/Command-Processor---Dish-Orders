@@ -20,26 +20,17 @@
 
 namespace COMMANDMANAGER
 {
+	/* Function pointers for the command table: */
 	typedef std::function <void (const std::vector <std::string>&)> FunctionExecute;
 
 
 
-	/* Pattern Singleton: */
+	/* A simple data container for command algorithms: */
 	/*------------------------------------------------------------------------------------------------------------------------*/
-	class Command_Processor
+	struct Data_Toolbox
 	{
-	public:
-		/* To access or initialize an object: */
-		static Command_Processor& getInstance();
-
-		void startCommandProcessor();
 	private:
-		Command_Processor()  = default;
-		~Command_Processor() = default;
-
-		/* This is a singleton, which means it is forbidden to have more than one instance of the class: */
-		Command_Processor(const Command_Processor &) = delete;
-		Command_Processor& operator= (const Command_Processor &) = delete;
+		MMNG::Menu current_menu_instance;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -63,8 +54,6 @@ namespace COMMANDMANAGER
 	{
 	public:
 		void execute(const std::vector <std::string> &args) override;
-	private:
-
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -92,6 +81,17 @@ namespace COMMANDMANAGER
 
 
 
+	/* [> help] */
+	/*------------------------------------------------------------------------------------------------------------------------*/
+	class Command_Help : public Command_Manager
+	{
+	public:
+		void execute(const std::vector <std::string> &args) override;
+	};
+	/*------------------------------------------------------------------------------------------------------------------------*/
+
+
+
 	/* Process Management command tables: */
 	/*------------------------------------------------------------------------------------------------------------------------*/
 	class Command_Executor
@@ -103,6 +103,8 @@ namespace COMMANDMANAGER
 		/*  */
 		Command_Menu&  getCommandMenuObject();
 		Command_Order& getCommandOrderObject();
+		Command_Exit&  getCommandExitObject();
+		Command_Help&  getCommandHelpObject();
 
 		/*  */
 		std::optional <std::string> readingStreamForExecution(const std::vector <std::string> &command_and_attribytes);
@@ -116,6 +118,29 @@ namespace COMMANDMANAGER
 		/* */
 		Command_Menu  command_menu_instance;
 		Command_Order command_order_instance;
+		Command_Exit  command_exit_instance;
+		Command_Help  command_help_instance;
+	};
+	/*------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+	/* Pattern Singleton: */
+	/*------------------------------------------------------------------------------------------------------------------------*/
+	class Command_Processor
+	{
+	public:
+		/* To access or initialize an object: */
+		static Command_Processor& getInstance();
+
+		void startCommandProcessor();
+	private:
+		Command_Processor()  = default;
+		~Command_Processor() = default;
+
+		/* This is a singleton, which means it is forbidden to have more than one instance of the class: */
+		Command_Processor(const Command_Processor &) = delete;
+		Command_Processor& operator= (const Command_Processor &) = delete;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 };

@@ -7,8 +7,6 @@
 void CMG::Command_Menu::execute(const std::vector<std::string>& args)
 {
 	std::cout << "Command_Menu\n";
-
-	return;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -28,7 +26,17 @@ void CMG::Command_Order::execute(const std::vector<std::string>& args)
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Exit::execute(const std::vector<std::string>& args)
 {
+	std::cout << "Exit\n";
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
 
+
+
+/* COMMAND "help": */
+/*------------------------------------------------------------------------------------------------------------------------*/
+void COMMANDMANAGER::Command_Help::execute(const std::vector<std::string>& args)
+{
+	std::cout << "Help\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -104,6 +112,8 @@ COMMANDMANAGER::Command_Executor::Command_Executor()
 {
 	this->command_table["menu"]  = std::bind(&Command_Menu::execute,  this->getCommandMenuObject(),  std::placeholders::_1);
 	this->command_table["order"] = std::bind(&Command_Order::execute, this->getCommandOrderObject(), std::placeholders::_1);
+	this->command_table["exit"]  = std::bind(&Command_Exit::execute,  this->getCommandExitObject(),  std::placeholders::_1);
+	this->command_table["help"]  = std::bind(&Command_Help::execute,  this->getCommandHelpObject(),  std::placeholders::_1);
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 CMG::Command_Menu& CMG::Command_Executor::getCommandMenuObject()
@@ -114,6 +124,16 @@ CMG::Command_Menu& CMG::Command_Executor::getCommandMenuObject()
 CMG::Command_Order& COMMANDMANAGER::Command_Executor::getCommandOrderObject()
 {
 	return this->command_order_instance;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+CMG::Command_Exit& COMMANDMANAGER::Command_Executor::getCommandExitObject()
+{
+	return this->command_exit_instance;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+CMG::Command_Help& COMMANDMANAGER::Command_Executor::getCommandHelpObject()
+{
+	return this->command_help_instance;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::unordered_map<std::string, CMG::FunctionExecute>& COMMANDMANAGER::Command_Executor::getInstanceCommandTable()

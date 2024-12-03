@@ -13,8 +13,8 @@
 
 namespace MENUMANAGER
 {
-	/*------------------------------------------------------------------------------------------------------------------------*/
 	/* To work with dishes from the menu: */
+	/*------------------------------------------------------------------------------------------------------------------------*/
 	class MenuItem
 	{
 	public:
@@ -55,17 +55,26 @@ namespace MENUMANAGER
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 
-	/*------------------------------------------------------------------------------------------------------------------------*/
+
+
 	/* A class for menu management: */
+	/*------------------------------------------------------------------------------------------------------------------------*/
 	class Menu
 	{
 	public:
 		Menu(std::string _name_menu) : name_menu(_name_menu) { }
-
+		Menu() { name_menu = "+=+Default+=+"; }
 
 		void insertItem(const std::string& category, const MenuItem& item) noexcept;
 
 		void displayMenu() const noexcept;
+
+		/* */
+		const std::string getNameMenu() const noexcept;
+
+		/* */
+		void setNameMenu(const std::string &_name_menu);
+
 	private:
 		/* The dishes should be sorted by category - where the ID goes in ascending order: */
 		struct MenuItemComparator

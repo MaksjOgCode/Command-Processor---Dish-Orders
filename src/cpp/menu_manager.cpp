@@ -10,6 +10,12 @@ void MENUMANAGER::Menu::insertItem(const std::string& category, const MenuItem& 
 /*------------------------------------------------------------------------------------------------------------------------*/
 void MENUMANAGER::Menu::displayMenu() const noexcept
 {
+	if ( menu_map.empty() )
+	{
+		std::cout << "Menu is empty\n";
+		return;
+	}
+
 	std::cout << "[MENU]: " << this->name_menu << "\n";
 	for (const auto &category_and_dishes : menu_map)
 	{
@@ -28,5 +34,15 @@ void MENUMANAGER::Menu::displayMenu() const noexcept
 	std::cout << "==================================================\n";
 
 	return;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+const std::string MENUMANAGER::Menu::getNameMenu() const noexcept
+{
+	return this->name_menu;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+void MENUMANAGER::Menu::setNameMenu(const std::string& _name_menu)
+{
+	this->name_menu = _name_menu;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
