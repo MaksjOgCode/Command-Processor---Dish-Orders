@@ -164,10 +164,9 @@ const std::expected<void, std::string> CPMENU::Reader::readCPMENU(MMNG::Menu &me
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::optional <std::uint16_t>  CPMENU::AlgorithmsReader::stringToUInt16(const std::string& input_str) const
 {
-	if (input_str < "0" || input_str > std::to_string(std::numeric_limits<uint16_t>::max()) )
+	int32_t value = std::stoul(input_str);
+	if (value < 0 || value > std::numeric_limits<uint16_t>::max() )
 		return std::nullopt;
-	
-	int value = std::stoul(input_str);
 
 	/* The translation is safe - you can return the value */
 	return static_cast<uint16_t>(value);
