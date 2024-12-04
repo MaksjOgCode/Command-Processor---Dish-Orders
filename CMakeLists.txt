@@ -9,6 +9,7 @@ set(SOURCES
   src/cpp/command_manager.cpp
   src/cpp/cpmenu_format.cpp
   src/cpp/menu_manager.cpp
+  src/cpp/order_manager.cpp
 )
 
 set(HEADERS
@@ -16,6 +17,7 @@ set(HEADERS
   src/hpp/command_manager.hpp
   src/hpp/cpmenu_format.hpp
   src/hpp/menu_manager.hpp
+  src/hpp/order_manager.hpp
 )
 
 add_executable(main.out ${SOURCES} ${HEADERS})
