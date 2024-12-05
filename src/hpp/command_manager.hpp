@@ -51,6 +51,8 @@ namespace COMMANDMANAGER
 		~Command_Manager() = default;
 		virtual void execute(const std::vector <std::string> &) = 0;
 		
+		virtual std::optional <std::string> checkingArguments(const std::vector <std::string> &) = 0;
+
 		virtual void getDescriptionCommand() = 0;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -63,6 +65,8 @@ namespace COMMANDMANAGER
 	{
 	public:
 		void execute(const std::vector <std::string> &args) override;
+
+		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
 
 		void getDescriptionCommand() override;
 
@@ -80,6 +84,8 @@ namespace COMMANDMANAGER
 	public:
 		void execute(const std::vector <std::string> &args) override;
 
+		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+
 		void getDescriptionCommand() override;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -93,6 +99,8 @@ namespace COMMANDMANAGER
 	public:
 		void execute(const std::vector <std::string> &args) override;
 
+		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+
 		void getDescriptionCommand() override;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -105,6 +113,8 @@ namespace COMMANDMANAGER
 	{
 	public:
 		void execute(const std::vector <std::string> &args) override;
+
+		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
 
 		void getDescriptionCommand() override;
 	};

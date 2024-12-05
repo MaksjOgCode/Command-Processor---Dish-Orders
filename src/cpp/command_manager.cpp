@@ -6,14 +6,42 @@
 /*------------------------------------------------------------------------------------------------------------------------*/
 void CMG::Command_Menu::execute(const std::vector<std::string>& args)
 {
-	std::cout << "\n";
-	this->toolbox_instance.getMenuInstance().displayMenu();
-	std::cout << "\n";
+	auto result_checking_arguments = this->checkingArguments(args);
+	if ( result_checking_arguments != std::nullopt)
+	{
+		std::cout << *result_checking_arguments << "\n";
+		return;
+	}
+
+	if ( args[0] == "show" )
+	{
+		std::cout << "\n";
+		this->toolbox_instance.getMenuInstance().displayMenu();
+		std::cout << "\n";
+	}
+	else if ( args[0] == "help" )
+	{
+		this->getDescriptionCommand();
+	}
+
+	return;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+std::optional<std::string> COMMANDMANAGER::Command_Menu::checkingArguments(const std::vector<std::string>& args)
+{
+	if ( args.size() > 1 )
+		return "There are too many arguments for the [menu] command:";
+
+	if ( (args[0] != "show") && (args[0] != "help") )
+		return "These attributes of the [menu] command are not supported:";
+
+	return std::nullopt;	
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Menu::getDescriptionCommand()
 {
-
+	std::cout << "Description of the [menu] command:\n" <<
+		"\tAttribytes:\n\t\t- [show]\n\t\t- [help]\n\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -24,6 +52,11 @@ void COMMANDMANAGER::Command_Menu::getDescriptionCommand()
 void CMG::Command_Order::execute(const std::vector<std::string>& args)
 {
 	std::cout << "Command_Order\n";
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+std::optional<std::string> COMMANDMANAGER::Command_Order::checkingArguments(const std::vector<std::string>& args)
+{
+	return std::nullopt;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Order::getDescriptionCommand()
@@ -41,6 +74,11 @@ void COMMANDMANAGER::Command_Exit::execute(const std::vector<std::string>& args)
 	std::exit(0);
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
+std::optional<std::string> COMMANDMANAGER::Command_Exit::checkingArguments(const std::vector<std::string>& args)
+{
+	return std::nullopt;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Exit::getDescriptionCommand()
 {
 
@@ -53,7 +91,12 @@ void COMMANDMANAGER::Command_Exit::getDescriptionCommand()
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Help::execute(const std::vector<std::string>& args)
 {
-	std::cout << "Help\n";
+	std::cout << "Available commands:\n[menu] att - [show], - [help]\n[help]\n\n";
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+std::optional<std::string> COMMANDMANAGER::Command_Help::checkingArguments(const std::vector<std::string>& args)
+{
+	return std::nullopt;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Help::getDescriptionCommand()
