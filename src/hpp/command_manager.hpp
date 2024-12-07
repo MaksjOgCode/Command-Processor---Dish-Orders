@@ -11,10 +11,12 @@
 #include <functional>
 #include <optional>
 #include <sstream>
+#include <expected>
 
 
 
 #include "menu_manager.hpp"
+#include "order_manager.hpp"
 
 
 
@@ -35,9 +37,12 @@ namespace COMMANDMANAGER
 		/* Getter and setter for the [MENU] field: */
 		static void setMenuInstance(const MMNG::Menu &input_menu_instance);
 		static const MMNG::Menu& getMenuInstance();
+
+		static const OMNG::Order& getOrderInstance();
 	private:
 		/* Available for expansion - currently only interaction with [MENU] is supported: */
-		static MMNG::Menu current_menu_instance;
+		static MMNG::Menu  current_menu_instance;
+		static OMNG::Order current_order_instance;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -84,9 +89,14 @@ namespace COMMANDMANAGER
 	public:
 		void execute(const std::vector <std::string> &args) override;
 
+	private:
 		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
 
+		std::expected <bool, std::string> isNumber(const std::string &input) const;
+
 		void getDescriptionCommand() override;
+
+		Data_Toolbox toolbox_instance;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
 

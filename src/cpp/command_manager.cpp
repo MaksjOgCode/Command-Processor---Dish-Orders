@@ -13,16 +13,7 @@ void CMG::Command_Menu::execute(const std::vector<std::string>& args)
 		return;
 	}
 
-	if ( args[0] == "show" )
-	{
-		std::cout << "\n";
-		this->toolbox_instance.getMenuInstance().displayMenu();
-		std::cout << "\n";
-	}
-	else if ( args[0] == "help" )
-	{
-		this->getDescriptionCommand();
-	}
+	this->toolbox_instance.getMenuInstance().displayMenu();
 
 	return;
 }
@@ -41,7 +32,7 @@ std::optional<std::string> COMMANDMANAGER::Command_Menu::checkingArguments(const
 void COMMANDMANAGER::Command_Menu::getDescriptionCommand()
 {
 	std::cout << "Description of the [menu] command:\n" <<
-		"\tAttribytes:\n\t\t- [show]\n\t\t- [help]\n\n";
+		"\tAttributes:\n\t\t- [show]\n\t\t- [help]\n\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -51,12 +42,102 @@ void COMMANDMANAGER::Command_Menu::getDescriptionCommand()
 /*------------------------------------------------------------------------------------------------------------------------*/
 void CMG::Command_Order::execute(const std::vector<std::string>& args)
 {
-	std::cout << "Command_Order\n";
+	auto result_checking_arguments = this->checkingArguments(args);
+	if ( result_checking_arguments != std::nullopt)
+	{
+		std::cout << *result_checking_arguments << "\n";
+		return;
+	}
+
+	auto order = this->toolbox_instance.getOrderInstance();
+	if (args[0] == "new")
+	{
+		order.createOrder(std::stoi( args[1] ));
+	}
+	else if (args[1] == "add")
+	{
+		order.getItem( std::stoi( args[0] ) ).addMeal( std::stoi( args[2] ), std::stoi( args[3] ) ); 
+	}
+	else if (args[1] == "show")
+	{
+		order.getItem( std::stoi(args[0]) ).displayOrder();
+	}
+
+
+	/*
+	* 
+	  if ( order new -> order-id )
+	  {
+			createOrder(order_id);
+	  }
+	  else if ( order <order-id> add <meal-id> <quantity> )
+	  {
+			addMealOrder(order_id, meal_id, quantity)
+	  }
+	  else if ( order <order-id> show )
+	  {
+			displayOrder(order_id)
+	  }
+
+	*/
+
+	std::cout << "order command:\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::optional<std::string> COMMANDMANAGER::Command_Order::checkingArguments(const std::vector<std::string>& args)
 {
+	if (args.size() != 2 && args.size() != 4)
+		return "Incorrect number of arguments";
+	/*--------------------------------------------------*/
+	if (args.size() == 2)
+	{
+		if (args[0] == "new")
+		{
+			if ( this->isNumber(args[1]) ) { return std::nullopt; }
+			else { return "The second argument must be the order-id\n"; }
+		}
+		else if ( this->isNumber(args[0]) )
+		{
+			if ( args[1] == "show" ) { return std::nullopt; }
+			else { return "The second argument must be the show\n"; }
+		}
+		else { return "The first argument must be the order-id or new\n"; }
+	}
+	else if (args.size() == 4)
+	{
+		if ( this->isNumber(args[0]) )
+		{
+			if (args[1] == "add")
+			{
+				if ( this->isNumber(args[2]) )
+				{
+					if ( this->isNumber(args[3])) { return std::nullopt; }
+					else { return "The fourth argument must be the quantity\n"; }
+				}
+				else { return "The third argument must be the meal-id\n"; }
+			}
+			else { return "The second argument must be the add\n"; }
+		}
+		else  { return "The first argument must be the order-id\n"; }
+	}
+	/*--------------------------------------------------*/
+
 	return std::nullopt;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+std::expected <bool, std::string> COMMANDMANAGER::Command_Order::isNumber(const std::string &input) const
+{
+	try 
+	{
+		std::stoi(input);
+		return true;
+	} catch (const std::invalid_argument &)
+	{
+		return std::unexpected("Invalud attribute [must number]" + input + "is not valid");
+	} catch (const std::out_of_range &)
+	{
+		return std::unexpected("Out of range: \"" + input + "\" is out of the range of representable values");
+	}
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Order::getDescriptionCommand()
@@ -71,17 +152,42 @@ void COMMANDMANAGER::Command_Order::getDescriptionCommand()
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Exit::execute(const std::vector<std::string>& args)
 {
-	std::exit(0);
+	auto result_checking_arguments = this->checkingArguments(args);
+	if ( result_checking_arguments != std::nullopt)
+	{
+		std::cout << *result_checking_arguments << "\n";
+		return;
+	}
+
+	if ( args.size() == 0 )
+	{
+		std::exit(0);
+	}
+	else if ( args.size() != 0 )
+	{
+		if ( args[0] == "help" ) { this->getDescriptionCommand(); }
+	}
+
+	return;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::optional<std::string> COMMANDMANAGER::Command_Exit::checkingArguments(const std::vector<std::string>& args)
 {
+	if ( args.size() > 1 )
+		return "There are too many arguments for the [exit] command:";
+
+	if ( args.size() != 0 )
+	{
+		if (args[0] != "help") { return "These attributes of the [exit] command are not supported:"; }
+	}
+
 	return std::nullopt;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Exit::getDescriptionCommand()
 {
-
+	std::cout << "Description of the [exit] command:\n" <<
+		"\tAttribute:\n\t\t- [help]\n\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -91,11 +197,21 @@ void COMMANDMANAGER::Command_Exit::getDescriptionCommand()
 /*------------------------------------------------------------------------------------------------------------------------*/
 void COMMANDMANAGER::Command_Help::execute(const std::vector<std::string>& args)
 {
-	std::cout << "Available commands:\n[menu] att - [show], - [help]\n[help]\n\n";
+	auto result_checking_arguments = this->checkingArguments(args);
+	if ( result_checking_arguments != std::nullopt)
+	{
+		std::cout << *result_checking_arguments << "\n";
+		return;
+	}
+
+	std::cout << "Available commands:\n[menu] att - [show], - [help]\n\n\n";
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::optional<std::string> COMMANDMANAGER::Command_Help::checkingArguments(const std::vector<std::string>& args)
 {
+	if ( args.size() != 0 )
+		return "These attributes of the [help] command are not supported:";
+
 	return std::nullopt;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
@@ -119,8 +235,15 @@ const MMNG::Menu& COMMANDMANAGER::Data_Toolbox::getMenuInstance()
 	return current_menu_instance;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
+const OMNG::Order& COMMANDMANAGER::Data_Toolbox::getOrderInstance()
+{
+	return current_order_instance;
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
 /* Static field: */
 MMNG::Menu COMMANDMANAGER::Data_Toolbox::current_menu_instance;
+/*------------------------------------------------------------------------------------------------------------------------*/
+OMNG::Order COMMANDMANAGER::Data_Toolbox::current_order_instance;
 /*------------------------------------------------------------------------------------------------------------------------*/
 
 
