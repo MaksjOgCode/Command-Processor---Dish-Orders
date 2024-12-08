@@ -12,6 +12,7 @@
 #include <optional>
 #include <sstream>
 #include <expected>
+#include <stdint.h>
 
 
 
@@ -23,7 +24,9 @@
 namespace COMMANDMANAGER
 {
 	/* Function pointers for the command table: */
+	/*------------------------------------------------------------------------------------------------------------------------*/
 	typedef std::function <void (const std::vector <std::string>&)> FunctionExecute;
+	/*------------------------------------------------------------------------------------------------------------------------*/
 
 
 
@@ -38,6 +41,7 @@ namespace COMMANDMANAGER
 		static void setMenuInstance(const MMNG::Menu &input_menu_instance);
 		static const MMNG::Menu& getMenuInstance();
 
+		/* Get order instance: */
 		static const OMNG::Order& getOrderInstance();
 	private:
 		/* Available for expansion - currently only interaction with [MENU] is supported: */
@@ -54,10 +58,14 @@ namespace COMMANDMANAGER
 	{
 	public:
 		~Command_Manager() = default;
+
+		/* The method of executing a specific command entered by the user: */
 		virtual void execute(const std::vector <std::string> &) = 0;
 		
-		virtual std::optional <std::string> checkingArguments(const std::vector <std::string> &) = 0;
+		/* Checking input arguments from the user: */
+		virtual std::expected <std::uint8_t, std::string> checkingArguments(const std::vector <std::string> &) = 0;
 
+		/* When calling the [help] argument: */
 		virtual void getDescriptionCommand() = 0;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -69,10 +77,14 @@ namespace COMMANDMANAGER
 	class Command_Menu : public Command_Manager
 	{
 	public:
+		/* The method of executing a specific command entered by the user: */
 		void execute(const std::vector <std::string> &args) override;
 
-		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+	private:
+		/* Checking input arguments from the user: */
+		std::expected <std::uint8_t, std::string> checkingArguments(const std::vector <std::string> &args) override;
 
+		/* When calling the [help] argument: */
 		void getDescriptionCommand() override;
 
 		/* In the toolbox, let's turn to the method - which will return us a link to the [MENU]: */
@@ -87,15 +99,20 @@ namespace COMMANDMANAGER
 	class Command_Order : public Command_Manager
 	{
 	public:
+		/* The method of executing a specific command entered by the user: */
 		void execute(const std::vector <std::string> &args) override;
 
 	private:
-		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+		/* Checking input arguments from the user: */
+		std::expected <std::uint8_t, std::string> checkingArguments(const std::vector <std::string> &args) override;
 
-		std::expected <bool, std::string> isNumber(const std::string &input) const;
-
+		/* When calling the [help] argument: */
 		void getDescriptionCommand() override;
 
+		/* For internal algorithms, the method is to check whether the number is valid: */
+		std::expected <bool, std::string> isNumber(const std::string &input) const;
+
+		/* On the toolbar, let's turn to the method that will return us a link to [ORDER]: */
 		Data_Toolbox toolbox_instance;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -107,10 +124,14 @@ namespace COMMANDMANAGER
 	class Command_Exit : public Command_Manager
 	{
 	public:
+		/* The method of executing a specific command entered by the user: */
 		void execute(const std::vector <std::string> &args) override;
 
-		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+	private:
+		/* Checking input arguments from the user: */
+		std::expected <std::uint8_t, std::string> checkingArguments(const std::vector <std::string> &args) override;
 
+		/* When calling the [help] argument: */
 		void getDescriptionCommand() override;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
@@ -122,10 +143,14 @@ namespace COMMANDMANAGER
 	class Command_Help : public Command_Manager
 	{
 	public:
+		/* The method of executing a specific command entered by the user: */
 		void execute(const std::vector <std::string> &args) override;
 
-		std::optional <std::string> checkingArguments(const std::vector <std::string> &args) override;
+	private:
+		/* Checking input arguments from the user: */
+		std::expected <std::uint8_t, std::string> checkingArguments(const std::vector <std::string> &args) override;
 
+		/* Returns a description of all available commands: */
 		void getDescriptionCommand() override;
 	};
 	/*------------------------------------------------------------------------------------------------------------------------*/
