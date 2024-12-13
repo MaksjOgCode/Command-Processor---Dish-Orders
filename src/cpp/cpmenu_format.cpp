@@ -3,6 +3,8 @@
 
 
 /*------------------------------------------------------------------------------------------------------------------------*/
+namespace fs = std::filesystem;
+/*------------------------------------------------------------------------------------------------------------------------*/
 static const std::string ultimate_path = "..//menu//";
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -10,35 +12,38 @@ static const std::string ultimate_path = "..//menu//";
 
 /* You can call the function that creates the .cpmenu file - using the correct path: */
 /*------------------------------------------------------------------------------------------------------------------------*/
-std::expected <void, std::string> CPMENU::createCPMENU(const std::string& name_file = "Menu")
-{ /* Creates a specific file format for the application: */
-  /* Checking for the existence of a file with the same name: */
-	std::ifstream check_file( (ultimate_path) + (name_file + ".cpmenu") );
-	if ( check_file.good() )
+std::expected<void, std::string> CPMENU::createCPMENU(const std::string& name_file = "Menu")
+{
+	/* Checking the existence of the file: */
+	fs::path file_path = ultimate_path + name_file + ".cpmenu";
+	if (fs::exists(file_path))
+		return std::unexpected("[CODE CPMENU-02] File with the same name already exists");
+
+	/* Creating a directory if it does not exist */
+	fs::path dir_path = ultimate_path;
+	if (!fs::exists(dir_path))
 	{
-		check_file.close();
-		return std::unexpected( "[CODE CPMENU-02] File with the same name already exists" );
+		if (!fs::create_directories(dir_path))
+			return std::unexpected("[CODE CPMENU-03] Failed to create directories");
 	}
 
-	/* Creating a new file and enabling the exception flag for the file stream: */
-	std::ofstream cpmenu_file( (ultimate_path) + (name_file + ".cpmenu") );
-	cpmenu_file.exceptions( std::ofstream::failbit | std::ofstream::badbit );
+	/* Creating the file: */
+	std::ofstream cpmenu_file(file_path);
+	cpmenu_file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 
-	/* Checking the status of the created file: */
 	try
 	{
-		if ( cpmenu_file.is_open() )
+		if (cpmenu_file.is_open())
 		{
 			cpmenu_file << "// This section of the comment is generated automatically: To use this format, read the rules for formatting the \".cpmenu\" file format\n// My github: https://github.com/MaksjOgCode\n\n";
-
 			cpmenu_file.close();
 		}
 		else
-			return std::unexpected( "[CODE CPMENU-00] Failed to open the created file" );
+			return std::unexpected("[CODE CPMENU-00] Failed to open the created file");
 	}
 	catch (const std::ios_base::failure& current_ex)
 	{
-		return std::unexpected( "[CODE CPMENU-01] I/O error: " + std::string( current_ex.what() ) );
+		return std::unexpected("[CODE CPMENU-01] I/O error: " + std::string(current_ex.what()));
 	}
 
 	return {};
@@ -53,8 +58,11 @@ CPMENU::Reader::Reader(const std::string &name_cpmenu_file)
 {
 	this->input_path_to_file = ultimate_path + name_cpmenu_file;
 
-	if ( input_path_to_file.empty() || input_path_to_file.length() < 7 || input_path_to_file.substr( input_path_to_file.length() - 7 ) != ".cpmenu" )
-		this->file_status = std::unexpected( "[CODE CPMENU-11] Supported only .cpmenu format: [OR] The file has no name: [OR] The file path is empty" );
+	/* Checking the existence of the file and validating the path: */
+	if (input_path_to_file.empty() || input_path_to_file.length() < 7 || input_path_to_file.substr(input_path_to_file.length() - 7) != ".cpmenu")
+		this->file_status = std::unexpected("[CODE CPMENU-11] Supported only .cpmenu format: [OR] The file has no name: [OR] The file path is empty");
+	else if (!fs::exists(input_path_to_file))
+		this->file_status = std::unexpected("[CODE CPMENU-14] File does not exist");
 	else
 		this->file_status = true;
 }
@@ -66,12 +74,16 @@ CPMENU::Reader::~Reader()
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 const std::expected<void, std::string> CPMENU::Reader::openCPMENU()
-{ /* Open a file [.cpmenu] of a specific format for reading data: */
-	if ( file_status.value() == false )
-		return std::unexpected( "[CODE CPMENU-12] Error opening the [.cpmenu] file - try to recreate the object" );
+{
+	if (file_status.value() == false)
+		return std::unexpected("[CODE CPMENU-12] Error opening the [.cpmenu] file - try to recreate the object");
 
-	input_cpmenu_file.open(ultimate_path + input_path_to_file);
-	if ( input_cpmenu_file.is_open() )
+	/* Checking the existence of the file before opening: */
+	if (!fs::exists(input_path_to_file))
+		return std::unexpected("[CODE CPMENU-14] File does not exist");
+
+	input_cpmenu_file.open(input_path_to_file);
+	if (input_cpmenu_file.is_open())
 		this->file_is_open = true;
 
 	return {};
@@ -262,6 +274,7 @@ std::optional <std::string> CPMENUFILE::AlgorithmsReader::entityAnalyzerCPMENU(c
 				if ( stringToUInt16(*id_value) != std::nullopt)
 				{
 					current_tokens["id"] = *id_value;
+					MENUMANAGER::Menu::available_id_meals.push_back( stringToUInt16(*id_value).value() );
 					return std::nullopt;
 				} /* Correct translation from a string literal to uint16_t is not possible: */
 				else { return "Overflow error in the .cpmenu file numeric values [price or id] - must be greater than 0 and less than 65536 "; }

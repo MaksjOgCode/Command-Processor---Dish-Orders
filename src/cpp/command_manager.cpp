@@ -115,27 +115,47 @@ void CMG::Command_Order::execute(const std::vector<std::string>& args)
 	if ( result_checking_arguments.has_value() )
 	{
 		auto order = this->toolbox_instance.getOrderInstance();
-		switch ( result_checking_arguments.value() )
+		switch (result_checking_arguments.value())
 		{
 		case 0b0'0'0'0'0'1'1'1: /* [new] order? */
-			order.createOrder(std::stoi( args[1] ));
+		{
+			order.createOrder(std::stoi(args[1]));
 			break;
+		}
 
 		case 0b0'0'0'0'1'0'1'1: /* [show] order? */
-			order.getItem( std::stoi(args[0]) ).displayOrder();
+		{
+			auto result = order.getItem(std::stoi(args[0]));
+			if (result.has_value())
+				result.value()->displayOrder();
+			else
+				std::cout << result.error() << "\n";
+
 			break;
+		}
 
 		case 0b0'0'1'1'0'0'0'1: /* [add] order by ID: */
-			order.getItem( std::stoi( args[0] ) ).addMeal( std::stoi(args[2]), std::stoi(args[3]) ); 
+		{
+			auto result = order.getItem(std::stoi(args[0]));
+			if (result.has_value())
+				result.value()->addMeal(std::stoi(args[2]), std::stoi(args[3]));
+			else
+				std::cout << result.error() << "\n";
+
 			break;
+		}
 
 		case 0b0'1'0'0'0'0'0'1: /* order [help]: */
+		{
 			this->getDescriptionCommand();
 			break;
+		}
 
 		default: /* If something went wrong: [What?] */
+		{
 			std::cout << "[?] The command cannot be executed:\n\n";
 			break;
+		}
 		}
 
 		return;
@@ -148,7 +168,29 @@ void CMG::Command_Order::execute(const std::vector<std::string>& args)
 	}
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
-std::expected <std::uint8_t, std::string> CMG::Command_Order::checkingArguments(const std::vector<std::string>& args)
+bool isPositiveNumber(const std::string& str)
+{
+	try
+	{
+		std::size_t pos;
+		long num = std::stol(str, &pos);
+
+		if (pos != str.length())
+			return false;
+
+		return num > 0;
+	}
+	catch (const std::invalid_argument&)
+	{
+		return false;
+	}
+	catch (const std::out_of_range&)
+	{
+		return false;
+	}
+}
+/*------------------------------------------------------------------------------------------------------------------------*/
+std::expected<std::uint8_t, std::string> CMG::Command_Order::checkingArguments(const std::vector<std::string>& args)
 {
 	/*
 	* flags 0'0'0'0'0'0'0'[1] - [1] - Checking the number of arguments;
@@ -167,7 +209,7 @@ std::expected <std::uint8_t, std::string> CMG::Command_Order::checkingArguments(
 	/* Argument is [help]? */
 	if (args.size() == 1)
 	{
-		if ( args[0] == "help" )
+		if (args[0] == "help")
 		{
 			flags |= 0b0'1'0'0'0'0'0'1;
 			return flags;
@@ -193,39 +235,41 @@ std::expected <std::uint8_t, std::string> CMG::Command_Order::checkingArguments(
 			flags |= 0b0'0'0'0'0'1'0'0;
 
 			/* Is the input number correct: */
-			if ( this->isNumber(args[1]).has_value() ) { return flags; }
-			else { return  std::unexpected("[1] " + this->isNumber(args[1]).error() + "\n[2] [] The second argument must be the [order-id]:\n"); }
+			if (isPositiveNumber(args[1])) { return flags; }
+			else { return std::unexpected("[1] The second argument must be a positive number\n[2] [] The second argument must be the [order-id]:\n"); }
 		}
-		else if ( this->isNumber(args[0]).has_value() )
+		else if (isPositiveNumber(args[0]))
 		{
 			/* Argument is [show]: */
-			if ( args[1] == "show" ) { flags |= 0b0'0'0'0'1'0'0'0; return flags; }
-			else { return  std::unexpected("[] The second argument must be the [show]\n"); }
+			if (args[1] == "show") { flags |= 0b0'0'0'0'1'0'0'0; return flags; }
+			else { return std::unexpected("[] The second argument must be the [show]\n"); }
 		}
-		else { return  std::unexpected("[1] " + this->isNumber(args[0]).error() + "\n[2] [] The first argument must be the [order-id] OR [new]\n"); }
+		else { return std::unexpected("[1] The argument must be a positive number\n[2] [] The first argument must be the [order-id] OR [new]\n"); }
 	}
 	else if (args.size() == 4)
 	{
 		/* Arguments have 4 element: */
 		flags |= 0b0'0'0'1'0'0'0'0;
 
-		if ( this->isNumber(args[0]).has_value() )
+		if (isPositiveNumber(args[0]))
 		{
 			if (args[1] == "add")
 			{
 				/* Argument is [add]: */
 				flags |= 0b0'0'1'0'0'0'0'0;
-				if ( this->isNumber(args[2]).has_value() )
+				if (isPositiveNumber(args[2]))
 				{
-					if ( this->isNumber(args[3]).has_value() ) { return flags; }
-					else { return std::unexpected("[1] " + this->isNumber(args[3]).error() + "\n[2] [] The fourth argument must be the quantity\n"); }
+					if (isPositiveNumber(args[3])) { return flags; }
+					else { return std::unexpected("[1] The fourth argument must be a positive number\n[2] [] The fourth argument must be the quantity\n"); }
 				}
-				else { return std::unexpected("[1] " + this->isNumber(args[2]).error() + "\n[2] [] The third argument must be the [meal-id]\n"); }
+				else { return std::unexpected("[1] The third argument must be a positive number\n[2] [] The third argument must be the [meal-id]\n"); }
 			}
 			else { return std::unexpected("[] The second argument must be the [add]\n"); }
 		}
-		else  { return std::unexpected("[1] " + this->isNumber(args[3]).error() + "\n[2] [] The first argument must be the order-id\n"); }
+		else { return std::unexpected("[1] The first argument must be a positive number\n[2] [] The first argument must be the order-id\n"); }
 	}
+
+	return std::unexpected("Unknown error");
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 std::expected <bool, std::string> CMG::Command_Order::isNumber(const std::string &input) const
@@ -405,12 +449,12 @@ void CMG::Command_Help::getDescriptionCommand()
 
 
 
-/* class Command Processor: */
+/* Command Processor Function: */
 /*------------------------------------------------------------------------------------------------------------------------*/
-void CMG::Command_Processor::startCommandProcessor()
+void CMG::startCommandProcessor()
 {
 	/* Initializing the command handler: */
-	Command_Executor executor_instance {};
+	CMG::Command_Executor executor_instance {};
 
 	/* Read input string: */
 	std::string input_string {};
@@ -438,12 +482,6 @@ void CMG::Command_Processor::startCommandProcessor()
 		/* Clearing a vector to process a new command: */
 		command_and_attribytes.clear();
 	}
-}
-/*------------------------------------------------------------------------------------------------------------------------*/
-CMG::Command_Processor& CMG::Command_Processor::getInstance()
-{ /* Singleton: */
-	static Command_Processor instance {};
-	return instance;
 }
 /*------------------------------------------------------------------------------------------------------------------------*/
 
