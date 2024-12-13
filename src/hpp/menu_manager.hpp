@@ -75,6 +75,7 @@ namespace MENUMANAGER
 		/* */
 		void setNameMenu(const std::string &_name_menu);
 
+		static std::vector <std::uint16_t > available_id_meals;
 	private:
 		/* The dishes should be sorted by category - where the ID goes in ascending order: */
 		struct MenuItemComparator

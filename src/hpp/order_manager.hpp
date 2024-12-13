@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <expected>
 
 
 
@@ -21,9 +22,11 @@ namespace ORDERMANAGER
 			this->item.order_id = _order_id;
 		}
 
-		void addMeal(const uint32_t &meal_id, const uint8_t &quantity);
+		void addMeal(const uint16_t &meal_id, const uint8_t &quantity);
 
 		void displayOrder();
+
+		bool isNoneItem() const noexcept;
 	private:
 		struct Item
 		{
@@ -47,7 +50,7 @@ namespace ORDERMANAGER
 	{
 	public:
 		void createOrder(const uint32_t &order_id);
-		OrderItem& getItem(const uint32_t order_id);
+		std::expected<ORDERMANAGER::OrderItem*, std::string> getItem(const uint32_t order_id);
 	private:
 		static std::map <uint32_t, OrderItem> current_orders;
 	};

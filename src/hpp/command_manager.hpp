@@ -191,24 +191,10 @@ namespace COMMANDMANAGER
 
 
 
-	/* Pattern Singleton: */
+	/* Command Processor Function: */
+	/* REPL - read-eval-print [LOOP]: */
 	/*------------------------------------------------------------------------------------------------------------------------*/
-	class Command_Processor
-	{
-	public:
-		/* To access or initialize an object: */
-		static Command_Processor& getInstance();
-
-		/* REPL - read-eval-print [LOOP]: */
-		void startCommandProcessor();
-	private:
-		Command_Processor()  = default;
-		~Command_Processor() = default;
-
-		/* This is a singleton, which means it is forbidden to have more than one instance of the class: */
-		Command_Processor(const Command_Processor &) = delete;
-		Command_Processor& operator= (const Command_Processor &) = delete;
-	};
+	void startCommandProcessor();
 	/*------------------------------------------------------------------------------------------------------------------------*/
 };
 namespace CMG = COMMANDMANAGER;
